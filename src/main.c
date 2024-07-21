@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "preproc.h"
 
@@ -17,22 +18,32 @@ int main(int argc, char **argv) {
       return errno;
    }
 
+   int retval = 0;
+
    PreprocToken *tokens;
-   switch (preprocess(file, &tokens)) {
+   Vector src = {};
+
+   switch (preprocess(file, &src, &tokens)) {
    case PREPROCESS_READ_FAIL:
       char errmsg[512];
       snprintf(errmsg, sizeof(errmsg), "failed to read %s", argv[1]);
       perror(errmsg);
-      goto err;
+      retval = -1;
+      goto err_read;
+
+   case PREPROCESS_OOM:
+      fprintf(stderr, "failed to read %s: out of memory\n", argv[1]);
+      retval = -1;
+      goto err_read;
 
    case PREPROCESS_OK:
       break;
    }
 
-   fclose(file);
-   return 0;
+   printf("%.*s", (int)src.size, (char *)src.alloc);
+   vector_deinit(&src);
 
-err:
+err_read:
    fclose(file);
-   return -1;
+   return retval;
 }
