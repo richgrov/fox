@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
       return -1;
    }
 
-   FILE *file = fopen(argv[1], "r");
+   FILE *file = fopen(argv[1], "rb");
    if (file == NULL) {
       char errmsg[512];
       snprintf(errmsg, sizeof(errmsg), "failed to open %s", argv[1]);
