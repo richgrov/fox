@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "error.h"
 #include "preproc.h"
 
 int main(int argc, char **argv) {
@@ -12,38 +13,44 @@ int main(int argc, char **argv) {
 
    FILE *file = fopen(argv[1], "rb");
    if (file == NULL) {
-      char errmsg[512];
-      snprintf(errmsg, sizeof(errmsg), "failed to open %s", argv[1]);
-      perror(errmsg);
+      perrorf("failed to open %s", argv[1]);
       return errno;
    }
 
-   int retval = 0;
-
-   PreprocToken *tokens;
-   Vector src = {};
-
-   switch (preprocess(file, &src, &tokens)) {
-   case PREPROCESS_READ_FAIL:
-      char errmsg[512];
-      snprintf(errmsg, sizeof(errmsg), "failed to read %s", argv[1]);
-      perror(errmsg);
-      retval = -1;
-      goto err_read;
-
-   case PREPROCESS_OOM:
-      fprintf(stderr, "failed to read %s: out of memory\n", argv[1]);
-      retval = -1;
-      goto err_read;
-
-   case PREPROCESS_OK:
-      break;
+   if (fseek(file, 0L, SEEK_END) != 0) {
+      perror("fseek end failed");
+      goto close_file;
    }
 
-   printf("%.*s", (int)src.size, (char *)src.alloc);
-   vector_deinit(&src);
+   long size = ftell(file);
+   if (size == -1) {
+      perror("ftell failed");
+      goto close_file;
+   }
 
-err_read:
+   char *buf = malloc(size);
+   if (buf == NULL) {
+      perrorf("failed to allocate %ld bytes for file", size);
+      goto close_file;
+   }
+
+   if (fseek(file, 0L, SEEK_SET) != 0) {
+      perror("fseek set failed");
+      goto free_buffer;
+   }
+
+   size_t read = fread(buf, 1, size, file);
+   if (read != size) {
+      perrorf("failed to read file");
+      goto free_buffer;
+   }
+
+   preprocess(buf, size);
+
+free_buffer:
+   free(buf);
+
+close_file:
    fclose(file);
-   return retval;
+   return errno;
 }
