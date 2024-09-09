@@ -29,8 +29,16 @@ typedef struct {
 #define VERTICAL_TAB '\x0B'
 #define FORM_FEED '\x0C'
 
-static char decode_trigraph(char c) {
-   switch (c) {
+static char try_decode_trigraph(Preprocessor *proc) {
+   if (proc->read_index + 2 >= proc->size) {
+      return '\0';
+   }
+
+   if (proc->src[proc->read_index] != '?' || proc->src[proc->read_index + 1] != '?') {
+      return '\0';
+   }
+
+   switch (proc->src[proc->read_index + 2]) {
    case '=':
       return '#';
    case '(':
@@ -59,20 +67,13 @@ static char next(Preprocessor *proc) {
       return '\0';
    }
 
-   char next = proc->src[proc->read_index];
-   bool room_for_trigraph = proc->read_index + 2 < proc->size;
-   if (next == '?' && room_for_trigraph) {
-      if (proc->src[proc->read_index + 1] == '?') {
-         char replaced = decode_trigraph(proc->src[proc->read_index + 2]);
-         if (replaced != '\0') {
-            proc->read_index += 3;
-            return replaced;
-         }
-      }
+   char trigraph = try_decode_trigraph(proc);
+   if (trigraph != '\0') {
+      proc->read_index += 3;
+      return trigraph;
    }
 
-   ++proc->read_index;
-   return next;
+   return proc->src[proc->read_index++];
 }
 
 static bool is_whitespace(char c) {
