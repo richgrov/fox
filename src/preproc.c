@@ -62,6 +62,19 @@ static char try_decode_trigraph(Preprocessor *proc) {
    }
 }
 
+static char peek(Preprocessor *proc) {
+   if (proc->read_index >= proc->size) {
+      return '\0';
+   }
+
+   char trigraph = try_decode_trigraph(proc);
+   if (trigraph != '\0') {
+      return trigraph;
+   }
+
+   return proc->src[proc->read_index];
+}
+
 static char next(Preprocessor *proc) {
    if (proc->read_index >= proc->size) {
       return '\0';
