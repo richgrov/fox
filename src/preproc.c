@@ -2,6 +2,8 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef enum {
    PROC_EOF, // not in the standard, but used internally
@@ -19,6 +21,7 @@ typedef struct {
    PreprocType type;
    union {
       char char_data;
+      char *str_data;
    };
 } PreprocToken;
 
@@ -104,10 +107,43 @@ static bool is_whitespace(char c) {
    }
 }
 
+static bool is_alpha(char c) {
+   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+static bool is_digit(char c) {
+   return c >= '0' && c <= '9';
+}
+
 static void skip_whitespace(Preprocessor *proc) {
    while (proc->read_index < proc->size && is_whitespace(proc->src[proc->read_index])) {
       ++proc->read_index;
    }
+}
+
+static PreprocToken identifier(Preprocessor *proc, char first) {
+   char identifier[128] = {first};
+   int identifier_index = 1;
+
+   while (proc->read_index < proc->size) {
+      // TODO: limit to 128 chars
+      char c = peek(proc);
+      if (!is_alpha(c) && !is_digit(c) && c != '_') {
+         break;
+      }
+
+      identifier[identifier_index++] = c;
+      next(proc);
+   }
+
+   char *str = malloc(identifier_index + 1);
+   memcpy(str, identifier, identifier_index + 1);
+
+   PreprocToken result = {
+      .type = PROC_IDENTIFIER,
+      .str_data = str,
+   };
+   return result;
 }
 
 static PreprocToken token(Preprocessor *proc) {
@@ -116,9 +152,16 @@ static PreprocToken token(Preprocessor *proc) {
    PreprocToken result = {0};
 
    char c = next(proc);
-   if (c == '\0') {
+   switch (c) {
+   case '\0':
       result.type = PROC_EOF;
       return result;
+
+   default:
+      if (is_alpha(c) || c == '_') {
+         return identifier(proc, c);
+      }
+      break;
    }
 
    result.char_data = c;
@@ -136,6 +179,10 @@ void preprocess(const char *src, size_t size) {
    for (PreprocToken tok = token(&proc); tok.type != PROC_EOF; tok = token(&proc)) {
       switch (tok.type) {
       case PROC_EOF:
+         break;
+
+      case PROC_IDENTIFIER:
+         printf("%s\n", tok.str_data);
          break;
 
       case PROC_CHAR:
