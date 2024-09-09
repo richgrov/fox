@@ -111,7 +111,7 @@ static void skip_whitespace(Preprocessor *proc) {
 static PreprocToken token(Preprocessor *proc) {
    skip_whitespace(proc);
 
-   PreprocToken result;
+   PreprocToken result = {0};
 
    char c = next(proc);
    if (c == '\0') {
