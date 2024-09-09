@@ -17,7 +17,9 @@ typedef enum {
 
 typedef struct {
    PreprocType type;
-   char temp;
+   union {
+      char char_data;
+   };
 } PreprocToken;
 
 typedef struct {
@@ -119,7 +121,7 @@ static PreprocToken token(Preprocessor *proc) {
       return result;
    }
 
-   result.temp = c;
+   result.char_data = c;
    result.type = PROC_CHAR;
    return result;
 }
@@ -132,8 +134,17 @@ void preprocess(const char *src, size_t size) {
    };
 
    for (PreprocToken tok = token(&proc); tok.type != PROC_EOF; tok = token(&proc)) {
-      if (tok.temp != '\r') {
-         printf("%c", tok.temp);
+      switch (tok.type) {
+      case PROC_EOF:
+         break;
+
+      case PROC_CHAR:
+         if (tok.char_data != '\r') {
+            printf("%c\n", tok.char_data);
+         }
+
+      default:
+         break;
       }
    }
 }
