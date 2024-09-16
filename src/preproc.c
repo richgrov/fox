@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "operator.h"
+
 typedef enum {
    PROC_EOF, // not in the standard, but used internally
    PROC_HEADER,
@@ -12,8 +14,7 @@ typedef enum {
    PROC_NUMBER,
    PROC_CHAR,
    PROC_STR,
-   PROC_OP,
-   PROC_PUNCTUATOR,
+   PROC_OPERATOR,
    PROC_MISC, // non-whitespace, non-comment character that isn't any of the above
 } PreprocType;
 
@@ -22,8 +23,14 @@ typedef struct {
    union {
       char char_data;
       char *str_data;
+      Operator op_data;
    };
 } PreprocToken;
+
+static PreprocToken operator_token(Operator op) {
+   PreprocToken result = {.type = PROC_OPERATOR, .op_data = op};
+   return result;
+}
 
 typedef struct {
    const char *src;
@@ -180,6 +187,18 @@ static PreprocToken token(Preprocessor *proc) {
       result.type = PROC_EOF;
       return result;
 
+   case '+':
+      return operator_token(OP_PLUS);
+
+   case '-':
+      return operator_token(OP_MINUS);
+
+   case '*':
+      return operator_token(OP_STAR);
+
+   case '/':
+      return operator_token(OP_SLASH);
+
    default:
       if (is_alpha(c) || c == '_') {
          return identifier(proc, c);
@@ -206,6 +225,10 @@ void preprocess(const char *src, size_t size) {
 
       case PROC_IDENTIFIER:
          printf("%s\n", tok.str_data);
+         break;
+
+      case PROC_OPERATOR:
+         printf("%s\n", operator_to_str(tok.op_data));
          break;
 
       case PROC_CHAR:

@@ -1,5 +1,7 @@
 add_executable(fox
   main.c
+  operator.c
+  operator.h
   preproc.c
   preproc.h
   error.c
