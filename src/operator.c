@@ -10,6 +10,14 @@ const char *operator_to_str(Operator op) {
       return "*";
    case OP_SLASH:
       return "/";
+   case OP_PLUS_EQUAL:
+      return "+=";
+   case OP_MINUS_EQUAL:
+      return "-=";
+   case OP_STAR_EQUAL:
+      return "*=";
+   case OP_SLASH_EQUAL:
+      return "/=";
    default:
       return "???";
    }

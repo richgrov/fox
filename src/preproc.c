@@ -188,15 +188,31 @@ static PreprocToken token(Preprocessor *proc) {
       return result;
 
    case '+':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_PLUS_EQUAL);
+      }
       return operator_token(OP_PLUS);
 
    case '-':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_MINUS_EQUAL);
+      }
       return operator_token(OP_MINUS);
 
    case '*':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_STAR_EQUAL);
+      }
       return operator_token(OP_STAR);
 
    case '/':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_SLASH_EQUAL);
+      }
       return operator_token(OP_SLASH);
 
    default:
