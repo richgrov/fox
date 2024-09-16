@@ -67,6 +67,18 @@ static char try_decode_trigraph(Preprocessor *proc) {
    }
 }
 
+static char try_line_splice(Preprocessor *proc) {
+   if (proc->read_index + 2 >= proc->size) {
+      return '\0';
+   }
+
+   if (proc->src[proc->read_index] != '\\' || proc->src[proc->read_index + 1] != '\n') {
+      return '\0';
+   }
+
+   return proc->src[proc->read_index + 2];
+}
+
 static char peek(Preprocessor *proc) {
    if (proc->read_index >= proc->size) {
       return '\0';
@@ -75,6 +87,11 @@ static char peek(Preprocessor *proc) {
    char trigraph = try_decode_trigraph(proc);
    if (trigraph != '\0') {
       return trigraph;
+   }
+
+   char next_line_char = try_line_splice(proc);
+   if (next_line_char != '\0') {
+      return next_line_char;
    }
 
    return proc->src[proc->read_index];
@@ -89,6 +106,12 @@ static char next(Preprocessor *proc) {
    if (trigraph != '\0') {
       proc->read_index += 3;
       return trigraph;
+   }
+
+   char next_line_char = try_line_splice(proc);
+   if (next_line_char != '\0') {
+      proc->read_index += 3;
+      return next_line_char;
    }
 
    return proc->src[proc->read_index++];
