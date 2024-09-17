@@ -215,6 +215,13 @@ static PreprocToken token(Preprocessor *proc) {
       }
       return operator_token(OP_SLASH);
 
+   case '%':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_PERCENT_EQUAL);
+      }
+      return operator_token(OP_PERCENT);
+
    case '!':
       if (peek(proc) == '=') {
          next(proc);

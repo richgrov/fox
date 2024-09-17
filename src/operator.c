@@ -10,6 +10,8 @@ const char *operator_to_str(Operator op) {
       return "*";
    case OP_SLASH:
       return "/";
+   case OP_PERCENT:
+      return "%";
    case OP_BANG:
       return "!";
    case OP_AMPERSAND:
@@ -26,6 +28,8 @@ const char *operator_to_str(Operator op) {
       return "*=";
    case OP_SLASH_EQUAL:
       return "/=";
+   case OP_PERCENT_EQUAL:
+      return "%=";
    case OP_BANG_EQUAL:
       return "!=";
    case OP_AMPERSAND_EQUAL:
