@@ -8,7 +8,12 @@
 #include "operator.h"
 
 typedef enum {
-   PROC_EOF, // not in the standard, but used internally
+   ERR_EOF,
+   ERR_UNEXPECTED,
+} PreprocError;
+
+typedef enum {
+   PROC_ERROR, // not in the standard, but used internally
    PROC_HEADER,
    PROC_IDENTIFIER,
    PROC_NUMBER,
@@ -24,6 +29,7 @@ typedef struct {
       char char_data;
       char *str_data;
       Operator op_data;
+      PreprocError err_data;
    };
 } PreprocToken;
 
@@ -184,7 +190,8 @@ static PreprocToken token(Preprocessor *proc) {
    char c = next(proc);
    switch (c) {
    case '\0':
-      result.type = PROC_EOF;
+      result.type = PROC_ERROR;
+      result.err_data = ERR_EOF;
       return result;
 
    case '+':
@@ -328,11 +335,8 @@ void preprocess(const char *src, size_t size) {
       .read_index = 0,
    };
 
-   for (PreprocToken tok = token(&proc); tok.type != PROC_EOF; tok = token(&proc)) {
+   for (PreprocToken tok = token(&proc); tok.type != PROC_ERROR; tok = token(&proc)) {
       switch (tok.type) {
-      case PROC_EOF:
-         break;
-
       case PROC_IDENTIFIER:
          printf("%s\n", tok.str_data);
          break;
