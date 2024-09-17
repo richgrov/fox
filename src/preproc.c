@@ -172,6 +172,10 @@ static PreprocToken identifier(Preprocessor *proc, char first) {
       next(proc);
    }
 
+   if (strcmp(identifier, "sizeof") == 0) {
+      return operator_token(OP_SIZEOF);
+   }
+
    char *str = malloc(identifier_index + 1);
    memcpy(str, identifier, identifier_index + 1);
 

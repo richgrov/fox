@@ -50,6 +50,7 @@ typedef enum {
    OP_ELIPSES,
    OP_HASH,
    OP_DOUBLE_HASH,
+   OP_SIZEOF,
 } Operator;
 
 const char *operator_to_str(Operator op);

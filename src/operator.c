@@ -98,6 +98,8 @@ const char *operator_to_str(Operator op) {
       return "#";
    case OP_DOUBLE_HASH:
       return "##";
+   case OP_SIZEOF:
+      return "sizeof";
    default:
       return "???";
    }
