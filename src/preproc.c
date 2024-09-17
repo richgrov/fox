@@ -250,6 +250,65 @@ static PreprocToken token(Preprocessor *proc) {
       }
       return operator_token(OP_UP_CARET);
 
+   case '<':
+      if (peek(proc) == '<') {
+         next(proc);
+
+         if (peek(proc) == '=') {
+            next(proc);
+            return operator_token(OP_DOUBLE_LCHEVRON_EQUAL);
+         }
+
+         return operator_token(OP_DOUBLE_LCHEVRON);
+      } else if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_LCHEVRON_EQUAL);
+      }
+
+      return operator_token(OP_LCHEVRON);
+
+   case '>':
+      if (peek(proc) == '>') {
+         next(proc);
+
+         if (peek(proc) == '=') {
+            next(proc);
+            return operator_token(OP_DOUBLE_RCHEVRON_EQUAL);
+         }
+
+         return operator_token(OP_DOUBLE_RCHEVRON);
+      } else if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_RCHEVRON_EQUAL);
+      }
+
+      return operator_token(OP_LCHEVRON);
+
+   case '[':
+      return operator_token(OP_LBRACKET);
+
+   case ']':
+      return operator_token(OP_RBRACKET);
+
+   case '(':
+      return operator_token(OP_LPAREN);
+
+   case ')':
+      return operator_token(OP_RPAREN);
+
+   case '{':
+      return operator_token(OP_LBRACE);
+
+   case '}':
+      return operator_token(OP_RBRACE);
+
+   case '=':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_EQUAL_EQUAL);
+      }
+      return operator_token(OP_EQUAL);
+
    default:
       if (is_alpha(c) || c == '_') {
          return identifier(proc, c);

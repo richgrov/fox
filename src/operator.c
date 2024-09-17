@@ -20,6 +20,10 @@ const char *operator_to_str(Operator op) {
       return "|";
    case OP_UP_CARET:
       return "^";
+   case OP_DOUBLE_LCHEVRON:
+      return "<<";
+   case OP_DOUBLE_RCHEVRON:
+      return ">>";
    case OP_PLUS_EQUAL:
       return "+=";
    case OP_MINUS_EQUAL:
@@ -38,6 +42,36 @@ const char *operator_to_str(Operator op) {
       return "|=";
    case OP_UP_CARET_EQUAL:
       return "^=";
+   case OP_DOUBLE_LCHEVRON_EQUAL:
+      return "<<=";
+   case OP_DOUBLE_RCHEVRON_EQUAL:
+      return ">>=";
+   case OP_LBRACKET:
+      return "[";
+   case OP_RBRACKET:
+      return "]";
+   case OP_LPAREN:
+      return "(";
+   case OP_RPAREN:
+      return ")";
+   case OP_LBRACE:
+      return "{";
+   case OP_RBRACE:
+      return "}";
+   case OP_DOUBLE_AMPERSAND:
+      return "&&";
+   case OP_DOUBLE_PIPE:
+      return "||";
+   case OP_LCHEVRON:
+      return "<";
+   case OP_RCHEVRON:
+      return ">";
+   case OP_LCHEVRON_EQUAL:
+      return "<=";
+   case OP_RCHEVRON_EQUAL:
+      return ">=";
+   case OP_EQUAL_EQUAL:
+      return "==";
    default:
       return "???";
    }
