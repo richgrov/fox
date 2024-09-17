@@ -37,6 +37,19 @@ typedef enum {
    OP_LCHEVRON_EQUAL,
    OP_RCHEVRON_EQUAL,
    OP_EQUAL_EQUAL,
+   OP_EQUAL,
+   OP_TILDE,
+   OP_INCREMENT,
+   OP_DECREMENT,
+   OP_COMMA,
+   OP_QUESTION,
+   OP_COLON,
+   OP_SEMICOLON,
+   OP_ARROW,
+   OP_DOT,
+   OP_ELIPSES,
+   OP_HASH,
+   OP_DOUBLE_HASH,
 } Operator;
 
 const char *operator_to_str(Operator op);

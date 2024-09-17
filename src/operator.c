@@ -72,6 +72,32 @@ const char *operator_to_str(Operator op) {
       return ">=";
    case OP_EQUAL_EQUAL:
       return "==";
+   case OP_EQUAL:
+      return "=";
+   case OP_TILDE:
+      return "~";
+   case OP_INCREMENT:
+      return "++";
+   case OP_DECREMENT:
+      return "--";
+   case OP_COMMA:
+      return ",";
+   case OP_QUESTION:
+      return "?";
+   case OP_COLON:
+      return ":";
+   case OP_SEMICOLON:
+      return ";";
+   case OP_ARROW:
+      return "->";
+   case OP_DOT:
+      return ".";
+   case OP_ELIPSES:
+      return "...";
+   case OP_HASH:
+      return "#";
+   case OP_DOUBLE_HASH:
+      return "##";
    default:
       return "???";
    }

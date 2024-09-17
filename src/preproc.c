@@ -198,6 +198,9 @@ static PreprocToken token(Preprocessor *proc) {
       if (peek(proc) == '=') {
          next(proc);
          return operator_token(OP_PLUS_EQUAL);
+      } else if (peek(proc) == '+') {
+         next(proc);
+         return operator_token(OP_INCREMENT);
       }
       return operator_token(OP_PLUS);
 
@@ -205,6 +208,12 @@ static PreprocToken token(Preprocessor *proc) {
       if (peek(proc) == '=') {
          next(proc);
          return operator_token(OP_MINUS_EQUAL);
+      } else if (peek(proc) == '-') {
+         next(proc);
+         return operator_token(OP_DECREMENT);
+      } else if (peek(proc) == '>') {
+         next(proc);
+         return operator_token(OP_ARROW);
       }
       return operator_token(OP_MINUS);
 
@@ -315,6 +324,43 @@ static PreprocToken token(Preprocessor *proc) {
          return operator_token(OP_EQUAL_EQUAL);
       }
       return operator_token(OP_EQUAL);
+
+   case '~':
+      return operator_token(OP_TILDE);
+
+   case ',':
+      return operator_token(OP_COMMA);
+
+   case '?':
+      return operator_token(OP_QUESTION);
+
+   case ':':
+      return operator_token(OP_COLON);
+
+   case ';':
+      return operator_token(OP_SEMICOLON);
+
+   case '.':
+      if (peek(proc) != '.') {
+         return operator_token(OP_DOT);
+      }
+      next(proc);
+
+      if (peek(proc) != '.') {
+         result.type = PROC_ERROR;
+         result.err_data = ERR_UNEXPECTED;
+         return result;
+      }
+      next(proc);
+
+      return operator_token(OP_ELIPSES);
+
+   case '#':
+      if (peek(proc) == '#') {
+         next(proc);
+         return operator_token(OP_DOUBLE_HASH);
+      }
+      return operator_token(OP_HASH);
 
    default:
       if (is_alpha(c) || c == '_') {
