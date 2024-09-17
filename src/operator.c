@@ -10,6 +10,14 @@ const char *operator_to_str(Operator op) {
       return "*";
    case OP_SLASH:
       return "/";
+   case OP_BANG:
+      return "!";
+   case OP_AMPERSAND:
+      return "&";
+   case OP_PIPE:
+      return "|";
+   case OP_UP_CARET:
+      return "^";
    case OP_PLUS_EQUAL:
       return "+=";
    case OP_MINUS_EQUAL:
@@ -18,6 +26,14 @@ const char *operator_to_str(Operator op) {
       return "*=";
    case OP_SLASH_EQUAL:
       return "/=";
+   case OP_BANG_EQUAL:
+      return "!=";
+   case OP_AMPERSAND_EQUAL:
+      return "&=";
+   case OP_PIPE_EQUAL:
+      return "|=";
+   case OP_UP_CARET_EQUAL:
+      return "^=";
    default:
       return "???";
    }

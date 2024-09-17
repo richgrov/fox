@@ -215,6 +215,34 @@ static PreprocToken token(Preprocessor *proc) {
       }
       return operator_token(OP_SLASH);
 
+   case '!':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_BANG_EQUAL);
+      }
+      return operator_token(OP_BANG);
+
+   case '&':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_AMPERSAND_EQUAL);
+      }
+      return operator_token(OP_AMPERSAND);
+
+   case '|':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_PIPE_EQUAL);
+      }
+      return operator_token(OP_PIPE);
+
+   case '^':
+      if (peek(proc) == '=') {
+         next(proc);
+         return operator_token(OP_UP_CARET_EQUAL);
+      }
+      return operator_token(OP_UP_CARET);
+
    default:
       if (is_alpha(c) || c == '_') {
          return identifier(proc, c);
