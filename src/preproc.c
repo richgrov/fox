@@ -157,6 +157,36 @@ static void skip_whitespace(Preprocessor *proc) {
    }
 }
 
+static PreprocToken number(Preprocessor *proc, char first) {
+   char number[128] = {first};
+   int number_index = 1;
+
+   bool prev_is_e = false;
+
+   while (proc->read_index < proc->size) {
+      // TODO: limit to 128 chars
+      char c = peek(proc);
+
+      bool is_plus_minus = prev_is_e && (c == '+' || c == '-');
+      if (!is_alpha(c) && !is_digit(c) && c != '_' && c != '.' && !is_plus_minus) {
+         break;
+      }
+
+      prev_is_e = c == 'e' || c == 'E';
+      number[number_index++] = c;
+      next(proc);
+   }
+
+   char *str = malloc(number_index + 1);
+   memcpy(str, number, number_index + 1);
+
+   PreprocToken result = {
+      .type = PROC_NUMBER,
+      .str_data = str,
+   };
+   return result;
+}
+
 static PreprocToken identifier(Preprocessor *proc, char first) {
    char identifier[128] = {first};
    int identifier_index = 1;
@@ -367,6 +397,10 @@ static PreprocToken token(Preprocessor *proc) {
       return operator_token(OP_HASH);
 
    default:
+      if (is_digit(c) || c == '.') {
+         return number(proc, c);
+      }
+
       if (is_alpha(c) || c == '_') {
          return identifier(proc, c);
       }
@@ -393,6 +427,10 @@ void preprocess(const char *src, size_t size) {
 
       case PROC_OPERATOR:
          printf("%s\n", operator_to_str(tok.op_data));
+         break;
+
+      case PROC_NUMBER:
+         printf("%s\n", tok.str_data);
          break;
 
       case PROC_CHAR:
