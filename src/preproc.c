@@ -374,8 +374,14 @@ static PreprocToken token(Preprocessor *proc) {
    case ';':
       return operator_token(OP_SEMICOLON);
 
-   case '.':
-      if (peek(proc) != '.') {
+   case '.': {
+      char peek_char = peek(proc);
+
+      if (is_digit(peek_char)) {
+         return number(proc, '.');
+      }
+
+      if (peek_char != '.') {
          return operator_token(OP_DOT);
       }
       next(proc);
@@ -386,7 +392,7 @@ static PreprocToken token(Preprocessor *proc) {
          return result;
       }
       next(proc);
-
+   }
       return operator_token(OP_ELIPSES);
 
    case '#':
