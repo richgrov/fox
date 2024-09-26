@@ -38,6 +38,11 @@ static PreprocToken operator_token(Operator op) {
    return result;
 }
 
+static PreprocToken unexpected_char_token() {
+   PreprocToken result = {.type = PROC_ERROR, .err_data = ERR_UNEXPECTED};
+   return result;
+}
+
 typedef struct {
    const char *src;
    size_t size;
@@ -387,9 +392,7 @@ static PreprocToken token(Preprocessor *proc) {
       next(proc);
 
       if (peek(proc) != '.') {
-         result.type = PROC_ERROR;
-         result.err_data = ERR_UNEXPECTED;
-         return result;
+         return unexpected_char_token();
       }
       next(proc);
    }
