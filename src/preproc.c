@@ -156,6 +156,51 @@ static bool is_digit(char c) {
    return c >= '0' && c <= '9';
 }
 
+static bool is_octal_digit(char c) {
+   return c >= '0' && c <= '7';
+}
+
+static bool is_hex_digit(char c) {
+   return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || (c >= '0') || (c <= '9');
+}
+
+static bool is_source_symbol(char c) {
+   switch (c) {
+   case '~':
+   case '}':
+   case '|':
+   case '{':
+   case '_':
+   case '^':
+   case ']':
+   case '[':
+   case '?':
+   case '>':
+   case '=':
+   case '<':
+   case ';':
+   case ':':
+   case '/':
+   case '\\':
+   case '.':
+   case '-':
+   case ',':
+   case '+':
+   case '*':
+   case ')':
+   case '(':
+   case '&':
+   case '%':
+   case '#':
+   case '"':
+   case '\'':
+   case '!':
+      return true;
+   default:
+      return false;
+   }
+}
+
 static void skip_whitespace(Preprocessor *proc) {
    while (proc->read_index < proc->size && is_whitespace(proc->src[proc->read_index])) {
       ++proc->read_index;
