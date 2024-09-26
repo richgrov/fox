@@ -237,6 +237,93 @@ static PreprocToken number(Preprocessor *proc, char first) {
    return result;
 }
 
+static int escape_sequence(Preprocessor *proc, char *str_buf, int buf_size) {
+   char c = next(proc);
+   switch (c) {
+   case '\'':
+   case '\"':
+   case '?':
+   case '\\':
+   case 'a':
+   case 'b':
+   case 'f':
+   case 'n':
+   case 'r':
+   case 't':
+   case 'v':
+      if (buf_size > 0) {
+         *str_buf = c;
+         return 1;
+      }
+      return 0;
+   }
+
+   int octal_count = 0;
+   do {
+      if (is_octal_digit(c)) {
+         if (++octal_count > buf_size) {
+            return 0;
+         }
+
+         *str_buf++ = c;
+         c = next(proc);
+      }
+   } while (octal_count <= 3);
+
+   if (octal_count > 0) {
+      return octal_count;
+   }
+
+   if (c != 'x') {
+      return -c;
+   }
+
+   int hex_count = 0;
+   for (c = peek(proc); is_hex_digit(c); c = peek(proc)) {
+      next(proc);
+      if (++hex_count > buf_size) {
+         return 0;
+      }
+
+      *str_buf++ = c;
+   }
+
+   return hex_count;
+}
+
+static PreprocToken character_literal(Preprocessor *proc) {
+   char contents[128] = {0};
+   int contents_len = 0;
+
+   for (char c = next(proc); c != '\''; c = next(proc)) {
+      // TODO length limit
+      contents[contents_len++] = c;
+
+      if (c == '\\') {
+         int len = escape_sequence(proc, contents + contents_len, sizeof(contents) - contents_len);
+         if (len == 0) {
+            return unexpected_char_token();
+         }
+
+         contents_len += len;
+         continue;
+      }
+
+      if (!is_alpha(c) && !is_digit(c) && !is_source_symbol(c)) {
+         return unexpected_char_token();
+      }
+   }
+
+   char *heap_contents = malloc(contents_len + 1);
+   memcpy(heap_contents, contents, contents_len + 1);
+
+   PreprocToken result = {
+      .type = PROC_CHAR,
+      .str_data = heap_contents,
+   };
+   return result;
+}
+
 static PreprocToken identifier(Preprocessor *proc, char first) {
    char identifier[128] = {first};
    int identifier_index = 1;
@@ -450,6 +537,9 @@ static PreprocToken token(Preprocessor *proc) {
       }
       return operator_token(OP_HASH);
 
+   case '\'':
+      return character_literal(proc);
+
    default:
       if (is_digit(c) || c == '.') {
          return number(proc, c);
@@ -476,6 +566,7 @@ void preprocess(const char *src, size_t size) {
    for (PreprocToken tok = token(&proc); tok.type != PROC_ERROR; tok = token(&proc)) {
       switch (tok.type) {
       case PROC_IDENTIFIER:
+      case PROC_CHAR:
       case PROC_NUMBER:
          printf("%s\n", tok.str_data);
          break;
