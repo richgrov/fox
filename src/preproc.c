@@ -417,7 +417,7 @@ static PreprocToken token(Preprocessor *proc) {
    }
 
    result.char_data = c;
-   result.type = PROC_CHAR;
+   result.type = PROC_MISC;
    return result;
 }
 
@@ -442,7 +442,7 @@ void preprocess(const char *src, size_t size) {
          printf("%s\n", tok.str_data);
          break;
 
-      case PROC_CHAR:
+      case PROC_MISC:
          if (tok.char_data != '\r') {
             printf("%c\n", tok.char_data);
          }
