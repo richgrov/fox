@@ -1,4 +1,5 @@
 add_executable(fox
+  chars.h
   main.c
   operator.c
   operator.h
