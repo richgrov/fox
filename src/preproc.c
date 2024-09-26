@@ -431,15 +431,12 @@ void preprocess(const char *src, size_t size) {
    for (PreprocToken tok = token(&proc); tok.type != PROC_ERROR; tok = token(&proc)) {
       switch (tok.type) {
       case PROC_IDENTIFIER:
+      case PROC_NUMBER:
          printf("%s\n", tok.str_data);
          break;
 
       case PROC_OPERATOR:
          printf("%s\n", operator_to_str(tok.op_data));
-         break;
-
-      case PROC_NUMBER:
-         printf("%s\n", tok.str_data);
          break;
 
       case PROC_MISC:
