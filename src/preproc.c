@@ -239,11 +239,11 @@ static int escape_sequence(Preprocessor *proc, char *str_buf, int buf_size) {
    return hex_count;
 }
 
-static PreprocToken character_literal(Preprocessor *proc) {
+static PreprocToken quoted_literal(Preprocessor *proc, char terminator, PreprocType result_type) {
    char contents[128] = {0};
    int contents_len = 0;
 
-   for (char c = next(proc); c != '\''; c = next(proc)) {
+   for (char c = next(proc); c != terminator; c = next(proc)) {
       // TODO length limit
       contents[contents_len++] = c;
 
@@ -266,7 +266,7 @@ static PreprocToken character_literal(Preprocessor *proc) {
    memcpy(heap_contents, contents, contents_len + 1);
 
    PreprocToken result = {
-      .type = PROC_CHAR,
+      .type = result_type,
       .str_data = heap_contents,
    };
    return result;
@@ -486,7 +486,7 @@ static PreprocToken token(Preprocessor *proc) {
       return operator_token(OP_HASH);
 
    case '\'':
-      return character_literal(proc);
+      return quoted_literal(proc, '\'', PROC_CHAR);
 
    default:
       if (is_digit(c) || c == '.') {
