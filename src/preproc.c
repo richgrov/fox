@@ -15,11 +15,11 @@ typedef enum {
 
 typedef enum {
    PROC_ERROR, // not in the standard, but used internally
-   PROC_HEADER,
    PROC_IDENTIFIER,
    PROC_NUMBER,
    PROC_CHAR,
    PROC_STR,
+   PROC_CHEVRON_STR, // #include strings quoted in < >
    PROC_OPERATOR,
    PROC_MISC, // non-whitespace, non-comment character that isn't any of the above
 } PreprocType;
@@ -397,6 +397,10 @@ static PreprocToken token(Preprocessor *proc) {
       return operator_token(OP_UP_CARET);
 
    case '<':
+      if (prev_header_state == HEADER_STATE_HASH_INCLUDE) {
+         return quoted_literal(proc, '>', PROC_CHEVRON_STR, false);
+      }
+
       if (peek(proc) == '<') {
          next(proc);
 
@@ -540,6 +544,7 @@ void preprocess(const char *src, size_t size) {
       case PROC_CHAR:
       case PROC_NUMBER:
       case PROC_STR:
+      case PROC_CHEVRON_STR:
          printf("%s\n", tok.str_data);
          break;
 
