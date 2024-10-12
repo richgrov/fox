@@ -189,7 +189,7 @@ static int escape_sequence(Preprocessor *proc, char *str_buf, int buf_size) {
    char c = next(proc);
    switch (c) {
    case '\'':
-   case '\"':
+   case '"':
    case '?':
    case '\\':
    case 'a':
