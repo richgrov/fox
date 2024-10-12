@@ -488,6 +488,9 @@ static PreprocToken token(Preprocessor *proc) {
    case '\'':
       return quoted_literal(proc, '\'', PROC_CHAR);
 
+   case '"':
+      return quoted_literal(proc, '"', PROC_STR);
+
    default:
       if (is_digit(c) || c == '.') {
          return number(proc, c);
@@ -516,6 +519,7 @@ void preprocess(const char *src, size_t size) {
       case PROC_IDENTIFIER:
       case PROC_CHAR:
       case PROC_NUMBER:
+      case PROC_STR:
          printf("%s\n", tok.str_data);
          break;
 
