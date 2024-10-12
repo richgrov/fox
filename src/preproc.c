@@ -44,10 +44,17 @@ static PreprocToken unexpected_char_token() {
    return result;
 }
 
+typedef enum {
+   HEADER_STATE_NONE,
+   HEADER_STATE_HASH,
+   HEADER_STATE_HASH_INCLUDE,
+} TokenizeHeaderState;
+
 typedef struct {
    const char *src;
    size_t size;
    size_t read_index;
+   TokenizeHeaderState tokenize_header_state;
 } Preprocessor;
 
 #define VERTICAL_TAB '\x0B'
@@ -239,7 +246,8 @@ static int escape_sequence(Preprocessor *proc, char *str_buf, int buf_size) {
    return hex_count;
 }
 
-static PreprocToken quoted_literal(Preprocessor *proc, char terminator, PreprocType result_type) {
+static PreprocToken
+quoted_literal(Preprocessor *proc, char terminator, PreprocType result_type, bool allow_escape) {
    char contents[128] = {0};
    int contents_len = 0;
 
@@ -247,7 +255,7 @@ static PreprocToken quoted_literal(Preprocessor *proc, char terminator, PreprocT
       // TODO length limit
       contents[contents_len++] = c;
 
-      if (c == '\\') {
+      if (allow_escape && c == '\\') {
          int len = escape_sequence(proc, contents + contents_len, sizeof(contents) - contents_len);
          if (len == 0) {
             return unexpected_char_token();
@@ -305,6 +313,9 @@ static PreprocToken token(Preprocessor *proc) {
    skip_whitespace(proc);
 
    PreprocToken result = {0};
+
+   TokenizeHeaderState prev_header_state = proc->tokenize_header_state;
+   proc->tokenize_header_state = HEADER_STATE_NONE;
 
    char c = next(proc);
    switch (c) {
@@ -483,13 +494,16 @@ static PreprocToken token(Preprocessor *proc) {
          next(proc);
          return operator_token(OP_DOUBLE_HASH);
       }
+
+      proc->tokenize_header_state = HEADER_STATE_HASH;
       return operator_token(OP_HASH);
 
    case '\'':
-      return quoted_literal(proc, '\'', PROC_CHAR);
+      return quoted_literal(proc, '\'', PROC_CHAR, true);
 
    case '"':
-      return quoted_literal(proc, '"', PROC_STR);
+      bool reading_include_directive = prev_header_state == HEADER_STATE_HASH_INCLUDE;
+      return quoted_literal(proc, '"', PROC_STR, !reading_include_directive);
 
    default:
       if (is_digit(c) || c == '.') {
@@ -497,7 +511,13 @@ static PreprocToken token(Preprocessor *proc) {
       }
 
       if (is_alpha(c) || c == '_') {
-         return identifier(proc, c);
+         PreprocToken tok = identifier(proc, c);
+
+         if (prev_header_state == HEADER_STATE_HASH && strcmp(tok.str_data, "include") == 0) {
+            proc->tokenize_header_state = HEADER_STATE_HASH_INCLUDE;
+         }
+
+         return tok;
       }
       break;
    }
