@@ -34,6 +34,19 @@ typedef struct {
    };
 } PreprocToken;
 
+static void token_free(PreprocToken *tok) {
+   switch (tok->type) {
+   case PROC_IDENTIFIER:
+   case PROC_CHAR:
+   case PROC_NUMBER:
+   case PROC_STR:
+   case PROC_CHEVRON_STR:
+      free(tok->str_data);
+   default:
+      break;
+   }
+}
+
 static PreprocToken operator_token(Operator op) {
    PreprocToken result = {.type = PROC_OPERATOR, .op_data = op};
    return result;
@@ -560,5 +573,7 @@ void preprocess(const char *src, size_t size) {
       default:
          break;
       }
+
+      token_free(&tok);
    }
 }
