@@ -1,10 +1,10 @@
 add_executable(fox
+  preprocessor/preproc.c
+  preprocessor/preproc.h
   chars.h
   main.c
   operator.c
   operator.h
-  preproc.c
-  preproc.h
   error.c
   error.h
 )

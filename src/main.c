@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "error.h"
-#include "preproc.h"
+#include "preprocessor/preproc.h"
 
 int main(int argc, char **argv) {
    if (argc < 2) {
