@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "chars.h"
+#include "config.h"
 #include "operator.h"
 
 typedef enum {
@@ -258,7 +259,7 @@ static int escape_sequence(Preprocessor *proc, char *str_buf, int buf_size) {
 
 static PreprocToken
 quoted_literal(Preprocessor *proc, char terminator, PreprocType result_type, bool allow_escape) {
-   char contents[128] = {0};
+   char contents[FOX_MAX_STR_LITERAL_LEN] = {0};
    int contents_len = 0;
 
    for (char c = next(proc); c != terminator; c = next(proc)) {

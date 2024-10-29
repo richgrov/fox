@@ -2,6 +2,7 @@ add_executable(fox
   preprocessor/preproc.c
   preprocessor/preproc.h
   chars.h
+  config.h
   main.c
   operator.c
   operator.h
