@@ -549,7 +549,8 @@ void preprocess(const char *src, size_t size) {
       .read_index = 0,
    };
 
-   for (PreprocToken tok = token(&proc); tok.type != PROC_ERROR; tok = token(&proc)) {
+   PreprocToken tok = token(&proc);
+   while (true) {
       switch (tok.type) {
       case PROC_IDENTIFIER:
       case PROC_CHAR:
@@ -567,11 +568,20 @@ void preprocess(const char *src, size_t size) {
          if (tok.char_data != '\r') {
             printf("%c\n", tok.char_data);
          }
+         break;
 
-      default:
+      case PROC_ERROR:
+         if (tok.err_data == ERR_UNEXPECTED) {
+            printf("Unexpected character\n");
+         }
          break;
       }
 
       token_free(&tok);
+      if (tok.type == PROC_ERROR) {
+         break;
+      }
+
+      tok = token(&proc);
    }
 }
