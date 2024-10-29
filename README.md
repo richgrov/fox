@@ -1,6 +1,6 @@
 # fox
 
-ANSI-compiant C89 compiler for STM32
+ANSI-compliant C89 compiler for STM32
 
 # Roadmap
 
