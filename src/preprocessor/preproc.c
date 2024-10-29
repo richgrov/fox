@@ -70,9 +70,6 @@ typedef struct {
    TokenizeHeaderState tokenize_header_state;
 } Preprocessor;
 
-#define VERTICAL_TAB '\x0B'
-#define FORM_FEED '\x0C'
-
 static char try_decode_trigraph(Preprocessor *proc) {
    if (proc->read_index + 2 >= proc->size) {
       return '\0';

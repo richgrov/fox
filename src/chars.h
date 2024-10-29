@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+#define VERTICAL_TAB '\x0B'
+#define FORM_FEED '\x0C'
+
 static inline bool is_alpha(char c) {
    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
@@ -50,6 +53,10 @@ static inline bool is_source_symbol(char c) {
    case '"':
    case '\'':
    case '!':
+   case ' ':
+   case '\t':
+   case VERTICAL_TAB:
+   case FORM_FEED:
       return true;
    default:
       return false;
