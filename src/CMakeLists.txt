@@ -1,4 +1,6 @@
 add_executable(fox
+  preprocessor/macro_dict.c
+  preprocessor/macro_dict.h
   preprocessor/preproc.c
   preprocessor/preproc.h
   chars.h
