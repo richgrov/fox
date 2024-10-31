@@ -16,10 +16,10 @@ typedef struct {
    unsigned long hash;
    MacroDef value;
    MacroDictNodeId next;
-} MacroDictionaryNode;
+} MacroDictNode;
 
 typedef struct {
-   MacroDictionaryNode nodes[1024];
+   MacroDictNode nodes[1024];
    MacroDictNodeId buckets[32];
    MacroDictNodeId next_avail;
 } MacroDictionary;

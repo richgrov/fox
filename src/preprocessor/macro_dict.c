@@ -59,7 +59,7 @@ bool macro_dict_put(MacroDictionary *dict, const char *key, const MacroDef *valu
    }
    *parent = dict->next_avail;
 
-   MacroDictionaryNode *new = &dict->nodes[dict->next_avail];
+   MacroDictNode *new = &dict->nodes[dict->next_avail];
    dict->next_avail = new->next;
    memset(new, 0, sizeof(*new));
    new->key = key;
@@ -74,7 +74,7 @@ const MacroDef *macro_dict_get(MacroDictionary *dict, const char *key) {
 
    MacroDictNodeId node_id = dict->buckets[hash % 32];
    while (node_id != NODE_NULL) {
-      MacroDictionaryNode *node = &dict->nodes[node_id];
+      MacroDictNode *node = &dict->nodes[node_id];
 
       if (hash == node->hash && strcmp(key, node->key) == 0) {
          return &node->value;
