@@ -6,7 +6,12 @@
 
 void test_macro_dict() {
    MacroDictionary dict = {};
-   macro_dict_put(&dict, "hello", "world");
-   const char *value = macro_dict_get(&dict, "hello");
-   FOX_ASSERT(strcmp(value, "world") == 0);
+
+   macro_dict_put(&dict, "one", "world");
+   FOX_ASSERT(strcmp(macro_dict_get(&dict, "one"), "world") == 0);
+
+   macro_dict_put(&dict, "two", "three");
+   FOX_ASSERT(strcmp(macro_dict_get(&dict, "two"), "three") == 0);
+
+   FOX_ASSERT(macro_dict_get(&dict, "three") == NULL);
 }
