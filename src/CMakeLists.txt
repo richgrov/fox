@@ -3,6 +3,7 @@ set(SRC_FILES
   preprocessor/macro_dict.h
   preprocessor/preproc.c
   preprocessor/preproc.h
+  array.h
   assert.h
   chars.h
   config.h
