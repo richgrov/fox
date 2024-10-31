@@ -3,6 +3,7 @@ set(SRC_FILES
   preprocessor/macro_dict.h
   preprocessor/preproc.c
   preprocessor/preproc.h
+  assert.h
   chars.h
   config.h
   operator.c
@@ -22,6 +23,7 @@ target_compile_definitions(fox PRIVATE _CRT_SECURE_NO_WARNINGS)
 
 add_executable(fox_test
   ${SRC_FILES}
+  preprocessor/macro_dict_test.h
   main_test.c
 )
 
