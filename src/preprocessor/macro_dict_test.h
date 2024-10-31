@@ -29,6 +29,7 @@ static bool macro_def_eq(const MacroDef *m1, const MacroDef *m2) {
 
 void test_macro_dict() {
    MacroDictionary dict = {};
+   macro_dict_init(&dict);
 
    const char *args1[] = {"a", "b", "c"};
    const MacroDef d1 = {
